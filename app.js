@@ -46,6 +46,9 @@ app.post('/enqueue', auth, function(req, res) {
   res.sendStatus(204);
 });
 
-app.listen(settings.server.port, function() {
-  console.log('collector-control listening on port ' + settings.server.port + '...');
+var server = app.listen(settings.server.port, function () {
+  var host = server.address().address;
+  var port = server.address().port;
+
+  console.log('collector-control listening at http:://%s:%s', host, port);
 });
