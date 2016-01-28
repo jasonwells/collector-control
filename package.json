@@ -1,0 +1,17 @@
+{
+  "name": "collector-control",
+  "version": "1.0.0",
+  "description": "Collector node receiver",
+  "main": "app.js",
+  "dependencies": {
+    "basic-auth": "^1.0.3",
+    "body-parser": "^1.14.2",
+    "express": "^4.13.4",
+    "redis": "^2.4.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jason Wells <flipstock@gmail.com>"
+}
