@@ -7,6 +7,15 @@ var settings = require('./config/settings');
 // Setup express
 var app = express();
 app.use(bodyParser.json());
+app.use(function (error, req, res, next) {
+  if (error instanceof SyntaxError) {
+    res.status(400);
+    res.json({ error: 'Invalid JSON object' });
+    console.log('ERROR: %s - Error parsing JSON body', req.originalUrl);
+  } else {
+    next();
+  }
+});
 
 // Setup redis connection
 var redisClient = redis.createClient(settings.redis.url);
@@ -39,15 +48,22 @@ app.get('/', function(req, res) {
 // Send request to queue here
 app.post('/enqueue', auth, function(req, res) {
   var job = {
-    class : settings.redis.class,
-    args  : [ req.body ],
+    class : settings.redis.class
   };
-  var success = redisClient.rpush(settings.redis.queue, JSON.stringify(job));
-  if (success) {
-    res.sendStatus(204);
+  if (req.body && req.body.constructor === Array) {
+    job.args = req.body;
+    var success = redisClient.rpush(settings.redis.queue, JSON.stringify(job));
+    if (success === true) {
+      res.sendStatus(204);
+    }
+    else {
+      res.sendStatus(500);
+    }
   }
   else {
-    res.sendStatus(500);
+    res.status(400);
+    res.json({ error: 'Body submitted must be array of arguments' });
+    console.log('ERROR: %s - Body submitted not an array of arguments', req.originalUrl);
   }
 });
 
