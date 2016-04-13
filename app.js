@@ -1,5 +1,5 @@
 var express = require('express');
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
 var redis = require('redis');
 var basicAuth = require('basic-auth');
 var settings = require('./config/settings');
@@ -16,19 +16,19 @@ var auth = function (req, res, next) {
   function unauthorized(res) {
     res.set('WWW-Authenticate', 'Basic realm=Authorization Required');
     return res.sendStatus(401);
-  };
+  }
 
   var user = basicAuth(req);
 
   if (!user || !user.name || !user.pass) {
     return unauthorized(res);
-  };
+  }
 
   if (user.name === settings.auth.username && user.pass === settings.auth.password) {
     return next();
   } else {
     return unauthorized(res);
-  };
+  }
 };
 
 // Status endpoint
@@ -42,8 +42,13 @@ app.post('/enqueue', auth, function(req, res) {
     class : settings.redis.class,
     args  : [ req.body ],
   };
-  redisClient.rpush(settings.redis.queue, JSON.stringify(job));
-  res.sendStatus(204);
+  var success = redisClient.rpush(settings.redis.queue, JSON.stringify(job));
+  if (success) {
+    res.sendStatus(204);
+  }
+  else {
+    res.sendStatus(500);
+  }
 });
 
 var server = app.listen(settings.server.port, function () {
