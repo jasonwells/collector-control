@@ -1,3 +1,7 @@
-# Collector Control
+# Enqueue Control
 
-A lightweight Node.js service to receive messages from collector nodes and add them to a resque queue.
+A lightweight Node.js Express service to receive messages and place them on a resque queue.
+
+```bash
+node app.js
+```
